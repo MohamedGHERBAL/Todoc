@@ -1,5 +1,6 @@
 package com.cleanup.todoc.ui;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,12 +19,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.cleanup.todoc.R;
+import com.cleanup.todoc.injections.Injection;
+import com.cleanup.todoc.injections.ViewModelFactory;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
+import com.cleanup.todoc.viewmodel.TaskViewModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>Home activity of the application which is displayed when the user opens the app.</p>
@@ -35,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all projects available in the application
      */
-    private final Project[] allProjects = Project.getAllProjects();
+    private Project[] allProjects = Project.getAllProjects();
 
     /**
      * List of all current tasks of the application
@@ -88,6 +93,12 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     @NonNull
     private TextView lblNoTasks;
 
+
+    // 1 - FOR DATA
+    private TaskViewModel taskViewModel;
+    // private TaskAdapter adapter;
+    // private static int USER_ID = 1;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,6 +110,9 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
         listTasks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         listTasks.setAdapter(adapter);
+
+        getProjects();
+        getTasks();
 
         findViewById(R.id.fab_add_task).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,17 +142,49 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             sortMethod = SortMethod.RECENT_FIRST;
         }
 
-        updateTasks();
+        //updateTasks();
 
         return super.onOptionsItemSelected(item);
     }
 
+    // -------------------
+    // DATA
+    // -------------------
+
+    // 2 - Configuring ViewModel
+    private void configureViewModel() {
+        ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
+        this.taskViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TaskViewModel.class);
+        this.taskViewModel.init();
+    }
+
+    // Get all Projects
+    private void getProjects() {
+        taskViewModel.getProjects().observe(this, this::updateProjects);
+    }
+
+    // Update Projects
+    private void updateProjects(List<Project> projects) {
+        allProjects = projects.toArray(new Project[0]);
+    }
+
+    // Get all tasks for a project
+    private void getTasks() {
+        taskViewModel.getTasks().observe(this, this::updateTasks);
+    }
+
+    // Delete Task
     @Override
     public void onDeleteTask(Task task) {
         tasks.remove(task);
-        updateTasks();
+        //updateTasks();
     }
-
+/*
+    private void updateTask(Task task){
+        task.setSelected(!task.getSelected());
+        this.taskViewModel.updateTask(task);
+    }
+*/
     /**
      * Called when the user clicks on the positive button of the Create Task Dialog.
      *
@@ -209,13 +255,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      */
     private void addTask(@NonNull Task task) {
         tasks.add(task);
-        updateTasks();
+        //updateTasks();
     }
 
     /**
      * Updates the list of tasks in the UI
      */
-    private void updateTasks() {
+    private void updateTasks(List<Task> tasks) {
         if (tasks.size() == 0) {
             lblNoTasks.setVisibility(View.VISIBLE);
             listTasks.setVisibility(View.GONE);

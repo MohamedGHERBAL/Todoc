@@ -4,28 +4,36 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 /**
  * <p>Models for project in which tasks are included.</p>
  *
  * @author Gaëtan HERFRAY
  */
+
+@Entity(tableName = "Projects")
 public class Project {
+
     /**
      * The unique identifier of the project
      */
-    private final long id;
+    @PrimaryKey
+    private long id;
 
     /**
      * The name of the project
      */
     @NonNull
-    private final String name;
+    private String name;
 
     /**
      * The hex (ARGB) code of the color associated to the project
      */
     @ColorInt
-    private final int color;
+    private int color;
 
     /**
      * Instantiates a new Project.
@@ -34,7 +42,8 @@ public class Project {
      * @param name  the name of the project to set
      * @param color the hex (ARGB) code of the color associated to the project to set
      */
-    private Project(long id, @NonNull String name, @ColorInt int color) {
+    //@Ignore
+    public Project(long id, @NonNull String name, @ColorInt int color) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -79,6 +88,10 @@ public class Project {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     /**
      * Returns the name of the project.
      *
@@ -89,6 +102,10 @@ public class Project {
         return name;
     }
 
+    public void setName(@androidx.annotation.NonNull String name) {
+        this.name = name;
+    }
+
     /**
      * Returns the hex (ARGB) code of the color associated to the project.
      *
@@ -97,6 +114,10 @@ public class Project {
     @ColorInt
     public int getColor() {
         return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 
     @Override

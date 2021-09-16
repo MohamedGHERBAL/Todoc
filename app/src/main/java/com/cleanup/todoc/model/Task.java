@@ -3,6 +3,10 @@ package com.cleanup.todoc.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
+
 import java.util.Comparator;
 
 /**
@@ -10,10 +14,16 @@ import java.util.Comparator;
  *
  * @author Gaëtan HERFRAY
  */
+
+@Entity(tableName = "Tasks", foreignKeys = @ForeignKey(entity = Project.class,
+        parentColumns = "id",
+        childColumns = "projectId"))
 public class Task {
+
     /**
      * The unique identifier of the task
      */
+    @PrimaryKey(autoGenerate = true)
     private long id;
 
     /**
@@ -67,6 +77,11 @@ public class Task {
         this.id = id;
     }
 
+
+    public long getProjectId() {
+        return projectId;
+    }
+
     /**
      * Sets the unique identifier of the project associated to the task.
      *
@@ -103,6 +118,11 @@ public class Task {
      */
     private void setName(@NonNull String name) {
         this.name = name;
+    }
+
+
+    public long getCreationTimestamp() {
+        return creationTimestamp;
     }
 
     /**

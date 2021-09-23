@@ -3,6 +3,7 @@ package com.cleanup.todoc.model;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
@@ -29,6 +30,7 @@ public class Task {
     /**
      * The unique identifier of the project associated to the task
      */
+    @ColumnInfo(name = "projectId", index = true)
     private long projectId;
 
     /**

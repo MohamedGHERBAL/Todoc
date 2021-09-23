@@ -1,6 +1,7 @@
 package com.cleanup.todoc.repositories;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 
 import com.cleanup.todoc.database.dao.ProjectDao;
 import com.cleanup.todoc.model.Project;
@@ -18,5 +19,15 @@ public class ProjectDataRepository {
     public ProjectDataRepository(ProjectDao projectDao) { this.projectDao = projectDao; }
 
     // --- GET PROJECT ---
-    public LiveData<List<Project>> getProjects() { return this.projectDao.getAllProjects(); }
+    public LiveData<List<Project>> getProjects() {
+        MutableLiveData<List<Project>> response = new MutableLiveData<>();
+        response.setValue(this.projectDao.getAllProjects());
+        return response;
+    }
+
+    public MutableLiveData<Project> getProject(long projectId) {
+        MutableLiveData<Project> response = new MutableLiveData<>();
+        response.setValue(this.projectDao.getProject(projectId));
+        return response;
+    }
 }

@@ -37,6 +37,7 @@ public abstract class TodocDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             TodocDatabase.class, "MyDatabase.db")
                             .addCallback(prepopulateDatabase())
+                            //.allowMainThreadQueries() // Use ONLY if you don't have SyncTask already implemented.
                             .build();
                 }
             }
@@ -52,11 +53,12 @@ public abstract class TodocDatabase extends RoomDatabase {
             @Override
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
+                Project[] projects = Project.getAllProjects();
 
-                for (Project project : Project.getAllProjects()) {
+                for (Project project : projects) {
                     ContentValues contentValues = new ContentValues();
 
-                    contentValues.put("id", project.getId());
+                    // contentValues.put("id", project.getId());
                     contentValues.put("name", project.getName());
                     contentValues.put("color", project.getColor());
 

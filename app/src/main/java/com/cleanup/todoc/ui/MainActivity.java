@@ -1,5 +1,6 @@
 package com.cleanup.todoc.ui;
 
+import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cleanup.todoc.R;
 import com.cleanup.todoc.injections.Injection;
@@ -40,7 +43,8 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all projects available in the application
      */
-    private Project[] allProjects = Project.getAllProjects();
+    //private Project[] allProjects = Project.getAllProjects();
+    private List<Project> allProjects;
 
     /**
      * List of all current tasks of the application
@@ -97,13 +101,14 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     // 1 - FOR DATA
     private TaskViewModel taskViewModel;
     // private TaskAdapter adapter;
-    // private static int USER_ID = 1;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.e("MainActivity", "onCreate is called !");
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
+        this.configureViewModel();
 
         listTasks = findViewById(R.id.list_tasks);
         lblNoTasks = findViewById(R.id.lbl_no_task);
@@ -111,15 +116,10 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         listTasks.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         listTasks.setAdapter(adapter);
 
+        findViewById(R.id.fab_add_task).setOnClickListener(view -> showAddTaskDialog());
+
         getProjects();
         getTasks();
-
-        findViewById(R.id.fab_add_task).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAddTaskDialog();
-            }
-        });
     }
 
     @Override
@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("MainActivity", "onOptionsItemSelected is called !");
         int id = item.getItemId();
 
         if (id == R.id.filter_alphabetical) {
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
             sortMethod = SortMethod.RECENT_FIRST;
         }
 
-        //updateTasks();
+        getTasks();
 
         return super.onOptionsItemSelected(item);
     }
@@ -153,31 +154,38 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     // 2 - Configuring ViewModel
     private void configureViewModel() {
+        Log.e("MainActivity", "configureViewModel is called !");
+
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
-        this.taskViewModel = ViewModelProviders.of(this, mViewModelFactory).get(TaskViewModel.class);
+        this.taskViewModel = new ViewModelProvider(this, mViewModelFactory).get(TaskViewModel.class);
         this.taskViewModel.init();
     }
 
     // Get all Projects
     private void getProjects() {
+        Log.e("MainActivity", "getProjects is called !");
+        assert taskViewModel.getProjects() != null;
         taskViewModel.getProjects().observe(this, this::updateProjects);
     }
 
     // Update Projects
     private void updateProjects(List<Project> projects) {
-        allProjects = projects.toArray(new Project[0]);
+        Log.e("MainActivity", "updateProjects is called !");
+        allProjects = projects;
     }
 
     // Get all tasks for a project
     private void getTasks() {
+        Log.e("MainActivity", "getTasks is called !");
         taskViewModel.getTasks().observe(this, this::updateTasks);
     }
 
     // Delete Task
     @Override
     public void onDeleteTask(Task task) {
-        tasks.remove(task);
-        //updateTasks();
+        Log.e("MainActivity", "onDeleteTask is called !");
+        this.taskViewModel.deleteTask(task);
+        adapter.updateTasks(tasks);
     }
 /*
     private void updateTask(Task task){
@@ -254,8 +262,11 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * @param task the task to be added to the list
      */
     private void addTask(@NonNull Task task) {
-        tasks.add(task);
-        //updateTasks();
+        Log.e("MainActivity", "addTask is called !");
+        taskViewModel.createTask(task);
+        adapter.updateTasks(tasks);
+
+        //tasks.add(task);
     }
 
     /**
@@ -299,32 +310,19 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         alertBuilder.setTitle(R.string.add_task);
         alertBuilder.setView(R.layout.dialog_add_task);
         alertBuilder.setPositiveButton(R.string.add, null);
-        alertBuilder.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                dialogEditText = null;
-                dialogSpinner = null;
-                dialog = null;
-            }
+        alertBuilder.setOnDismissListener(dialogInterface -> {
+            dialogEditText = null;
+            dialogSpinner = null;
+            dialog = null;
         });
 
         dialog = alertBuilder.create();
 
         // This instead of listener to positive button in order to avoid automatic dismiss
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+        dialog.setOnShowListener(dialogInterface -> {
 
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-
-                Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                button.setOnClickListener(new View.OnClickListener() {
-
-                    @Override
-                    public void onClick(View view) {
-                        onPositiveButtonClick(dialog);
-                    }
-                });
-            }
+            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(view -> onPositiveButtonClick(dialog));
         });
 
         return dialog;

@@ -1,10 +1,11 @@
 package com.cleanup.todoc.repositories;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.cleanup.todoc.database.dao.TaskDao;
-import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 
 import java.util.List;
@@ -21,9 +22,7 @@ public class TaskDataRepository {
 
     // --- GET ---
     public LiveData<List<Task>> getTasks() {
-        MutableLiveData<List<Task>> response = new MutableLiveData<>();
-        response.setValue(this.taskDao.getTasks());
-        return response;
+        return this.taskDao.getTasks();
     }
 
     // --- CREATE ---

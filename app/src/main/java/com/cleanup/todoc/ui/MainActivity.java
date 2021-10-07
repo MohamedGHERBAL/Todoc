@@ -1,15 +1,9 @@
 package com.cleanup.todoc.ui;
 
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
+
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +13,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cleanup.todoc.R;
 import com.cleanup.todoc.injections.Injection;
@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     /**
      * List of all projects available in the application
      */
-    //private Project[] allProjects = Project.getAllProjects();
     private List<Project> allProjects;
 
     /**
@@ -100,15 +99,14 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     // 1 - FOR DATA
     private TaskViewModel taskViewModel;
-    // private TaskAdapter adapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.e("MainActivity", "onCreate is called !");
+        Log.i("MainActivity", "onCreate is called !");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.configureViewModel();
+        configureViewModel();
 
         listTasks = findViewById(R.id.list_tasks);
         lblNoTasks = findViewById(R.id.lbl_no_task);
@@ -130,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.e("MainActivity", "onOptionsItemSelected is called !");
+        Log.i("MainActivity", "onOptionsItemSelected is called !");
         int id = item.getItemId();
 
         if (id == R.id.filter_alphabetical) {
@@ -154,45 +152,53 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
 
     // 2 - Configuring ViewModel
     private void configureViewModel() {
-        Log.e("MainActivity", "configureViewModel is called !");
+        Log.i("MainActivity", "configureViewModel is called !");
 
         ViewModelFactory mViewModelFactory = Injection.provideViewModelFactory(this);
-        this.taskViewModel = new ViewModelProvider(this, mViewModelFactory).get(TaskViewModel.class);
-        this.taskViewModel.init();
+        taskViewModel = new ViewModelProvider(this, mViewModelFactory).get(TaskViewModel.class);
+        taskViewModel.init();
     }
 
     // Get all Projects
     private void getProjects() {
-        Log.e("MainActivity", "getProjects is called !");
+        Log.i("MainActivity", "getProjects is called !");
         assert taskViewModel.getProjects() != null;
         taskViewModel.getProjects().observe(this, this::updateProjects);
     }
 
     // Update Projects
     private void updateProjects(List<Project> projects) {
-        Log.e("MainActivity", "updateProjects is called !");
+        Log.i("MainActivity", "updateProjects is called !");
         allProjects = projects;
     }
 
     // Get all tasks for a project
     private void getTasks() {
-        Log.e("MainActivity", "getTasks is called !");
+        Log.i("MainActivity", "getTasks is called !");
         taskViewModel.getTasks().observe(this, this::updateTasks);
+    }
+
+    /**
+     * Adds the given task to the list of created tasks.
+     *
+     * @param task the task to be added to the list
+     */
+    private void addTask(@NonNull Task task) {
+        Log.i("MainActivity", "addTask is called !");
+
+        taskViewModel.createTask(task);
     }
 
     // Delete Task
     @Override
     public void onDeleteTask(Task task) {
-        Log.e("MainActivity", "onDeleteTask is called !");
-        this.taskViewModel.deleteTask(task);
+        Log.i("MainActivity", "onDeleteTask is called !");
+
+        tasks.remove(task);
+        taskViewModel.deleteTask(task);
         adapter.updateTasks(tasks);
     }
-/*
-    private void updateTask(Task task){
-        task.setSelected(!task.getSelected());
-        this.taskViewModel.updateTask(task);
-    }
-*/
+
     /**
      * Called when the user clicks on the positive button of the Create Task Dialog.
      *
@@ -257,22 +263,11 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     }
 
     /**
-     * Adds the given task to the list of created tasks.
-     *
-     * @param task the task to be added to the list
-     */
-    private void addTask(@NonNull Task task) {
-        Log.e("MainActivity", "addTask is called !");
-        taskViewModel.createTask(task);
-        adapter.updateTasks(tasks);
-
-        //tasks.add(task);
-    }
-
-    /**
      * Updates the list of tasks in the UI
      */
     private void updateTasks(List<Task> tasks) {
+        Log.i("MainActivity", "updateTasks is called !");
+
         if (tasks.size() == 0) {
             lblNoTasks.setVisibility(View.VISIBLE);
             listTasks.setVisibility(View.GONE);

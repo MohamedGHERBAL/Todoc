@@ -1,14 +1,15 @@
 package com.cleanup.todoc.ui;
 
 import android.content.res.ColorStateList;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cleanup.todoc.R;
 import com.cleanup.todoc.model.Project;
@@ -40,9 +41,10 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
      * @param tasks the list of tasks the adapter deals with to set
      */
     TasksAdapter(@NonNull final List<Task> tasks, @NonNull final DeleteTaskListener deleteTaskListener) {
-        Log.e("TaskAdapter", "TasksAdapter is called !");
-        this.tasks = tasks;
+        Log.i("TaskAdapter", "TasksAdapter is called !");
+
         this.deleteTaskListener = deleteTaskListener;
+        this.tasks = tasks;
     }
 
     /**
@@ -51,7 +53,8 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
      * @param tasks the list of tasks the adapter deals with to set
      */
     void updateTasks(@NonNull final List<Task> tasks) {
-        Log.e("TaskAdapter", "updateTasks is called !");
+        Log.i("TaskAdapter", "updateTasks is called !");
+
         this.tasks = tasks;
         notifyDataSetChanged();
     }
@@ -90,7 +93,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.TaskViewHold
      *
      * @author Gaëtan HERFRAY
      */
-    class TaskViewHolder extends RecyclerView.ViewHolder {
+    static class TaskViewHolder extends RecyclerView.ViewHolder {
         /**
          * The circle icon showing the color of the project
          */

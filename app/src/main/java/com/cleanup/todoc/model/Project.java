@@ -1,11 +1,9 @@
 package com.cleanup.todoc.model;
 
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 /**
@@ -42,7 +40,6 @@ public class Project {
      * @param name  the name of the project to set
      * @param color the hex (ARGB) code of the color associated to the project to set
      */
-    //@Ignore
     public Project(long id, @NonNull String name, @ColorInt int color) {
         this.id = id;
         this.name = name;

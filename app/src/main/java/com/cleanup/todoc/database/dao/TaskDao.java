@@ -1,7 +1,6 @@
 package com.cleanup.todoc.database.dao;
 
-import android.arch.lifecycle.LiveData;
-
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -20,7 +19,7 @@ import java.util.List;
 public interface TaskDao {
 
     @Query("SELECT * FROM Tasks")
-    List<Task> getTasks();
+    LiveData<List<Task>> getTasks();
 
     @Insert
     long insertTask(Task task);
@@ -28,7 +27,6 @@ public interface TaskDao {
     @Update
     int updateTask(Task task);
 
-    //@Query("DELETE FROM Tasks WHERE id = :task")
     @Delete
     int deleteTask(Task task);
 }

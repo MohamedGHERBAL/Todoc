@@ -1,9 +1,9 @@
 package com.cleanup.todoc.viewmodel;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;

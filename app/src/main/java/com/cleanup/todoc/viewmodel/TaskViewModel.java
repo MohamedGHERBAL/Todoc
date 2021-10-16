@@ -3,6 +3,7 @@ package com.cleanup.todoc.viewmodel;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.cleanup.todoc.model.Project;
@@ -25,20 +26,19 @@ public class TaskViewModel extends ViewModel {
     private final Executor executor;
 
     // DATA
-    @Nullable
-    private LiveData<List<Project>> currentProject;
+    private final MutableLiveData<List<Project>> currentProject;
 
     public TaskViewModel(TaskDataRepository taskDataSource, ProjectDataRepository projectDataSource, Executor executor) {
         this.taskDataSource = taskDataSource;
         this.projectDataSource = projectDataSource;
         this.executor = executor;
+        this.currentProject = new MutableLiveData<>();
     }
 
     public void init() {
-        if (this.currentProject != null) {
-            return;
-        }
-        currentProject = projectDataSource.getProjects();
+        this.executor.execute(() -> {
+            currentProject.postValue(projectDataSource.getProjects());
+        });
     }
 
     // -------------

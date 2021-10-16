@@ -20,10 +20,8 @@ public class ProjectDataRepository {
     public ProjectDataRepository(ProjectDao projectDao) { this.projectDao = projectDao; }
 
     // --- GET PROJECT ---
-    public LiveData<List<Project>> getProjects() {
-        MutableLiveData<List<Project>> response = new MutableLiveData<>();
-        response.setValue(this.projectDao.getAllProjects());
-        return response;
+    public List<Project> getProjects() {
+        return this.projectDao.getAllProjects();
     }
 
     public MutableLiveData<Project> getProject(long projectId) {

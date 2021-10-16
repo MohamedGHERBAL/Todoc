@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     // Get all Projects
     private void getProjects() {
         Log.i("MainActivity", "getProjects is called !");
-        assert taskViewModel.getProjects() != null;
+
         taskViewModel.getProjects().observe(this, this::updateProjects);
     }
 
@@ -194,9 +194,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     public void onDeleteTask(Task task) {
         Log.i("MainActivity", "onDeleteTask is called !");
 
-        tasks.remove(task);
         taskViewModel.deleteTask(task);
-        adapter.updateTasks(tasks);
     }
 
     /**
